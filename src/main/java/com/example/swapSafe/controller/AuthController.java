@@ -1,5 +1,7 @@
 package com.example.swapSafe.controller;
 
+import com.example.swapSafe.dto.LoginRequest;
+import com.example.swapSafe.dto.LoginResponse;
 import com.example.swapSafe.dto.RegisterRequest;
 import com.example.swapSafe.dto.RegisterResponse;
 import com.example.swapSafe.service.AuthService;
@@ -22,5 +24,11 @@ public class AuthController {
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest req){
         return ResponseEntity.ok(auth.registerCustomer(req));
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req){
+        return ResponseEntity.ok(auth.login(req));
+    }
+
 }
 
