@@ -1,6 +1,7 @@
 package com.example.swapSafe.security;
 
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -13,12 +14,8 @@ import java.util.Set;
 
 @Component
 public class JwtUtil {
-//    private final String secret;               // injected from properties
     private final Key key;
 
-//    public JwtUtil(@Value("${spring.security.oauth2.resourceserver.jwt.secret}") String secret) {
-//        this.secret = secret;
-//    }
 
     public JwtUtil(@Value("${spring.security.oauth2.resourceserver.jwt.secret}") String secret) {
 
@@ -42,5 +39,12 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 86_400_000)) // 24h
                 .signWith(key,SignatureAlgorithm.HS256)
                 .compact();
+    }
+    public Long extractUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)  // Use the same secret key to verify the token
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("uid", Long.class);  // Extract the user ID
     }
 }
