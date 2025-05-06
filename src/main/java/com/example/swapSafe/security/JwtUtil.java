@@ -21,8 +21,6 @@ public class JwtUtil {
 
         try {
             this.key = Keys.hmacShaKeyFor(secret.getBytes());
-            // or if it's Base64 encoded, use:
-            // this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
         } catch (Exception e) {
             throw new RuntimeException("Error initializing JwtUtil", e);
         }

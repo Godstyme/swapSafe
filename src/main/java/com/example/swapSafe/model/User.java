@@ -3,6 +3,8 @@ package com.example.swapSafe.model;
 import jakarta.persistence.*;
 //import lombok.Getter;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 
@@ -38,6 +40,11 @@ public class User {
     @Column(name = "role")
     private Set<Role> roles;
 
+    @Setter
+    @Column(nullable = false, columnDefinition = "NUMERIC(38,2) DEFAULT 0.00")
+    private BigDecimal balance = BigDecimal.ZERO;
+
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -51,6 +58,7 @@ public class User {
         this.name = Objects.requireNonNull(builder.name,  "email");
         this.email =  Objects.requireNonNull(builder.email,  "email");
         this.password = Objects.requireNonNull(builder.password, "password");
+        this.balance = builder.balance != null ? builder.balance : BigDecimal.ZERO;
         this.roles = Collections.unmodifiableSet(
                 builder.roles.isEmpty() ? EnumSet.of(Role.CUSTOMER)
                         : EnumSet.copyOf(builder.roles));
@@ -69,6 +77,7 @@ public class User {
         private String email;
         private String password;
         private Set<Role> roles = new HashSet<>();
+        private BigDecimal balance = BigDecimal.ZERO;
 
         public Builder name(String name) {
             this.name = name;
@@ -85,13 +94,13 @@ public class User {
             return this;
         }
 
-//        public Builder role(Role role) {
-//            this.roles.add(role);
-//            return this;
-//        }
-
         public Builder roles(Set<Role> roles) {
             this.roles.addAll(roles);
+            return this;
+        }
+
+        public Builder balance(BigDecimal balance) {
+            this.balance = balance != null ? balance : BigDecimal.ZERO; // Default to ZERO if balance is null
             return this;
         }
 
