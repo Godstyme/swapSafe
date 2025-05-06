@@ -2,13 +2,20 @@ package com.example.swapSafe.controller;
 
 
 import com.example.swapSafe.dto.LinkWalletRequest;
+import com.example.swapSafe.model.LinkedWalletAddress;
+import com.example.swapSafe.model.User;
+import com.example.swapSafe.repository.UserRepository;
 import com.example.swapSafe.security.JwtUtil;
 import com.example.swapSafe.service.LinkedWalletService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -17,6 +24,9 @@ public class WalletLinkController {
 
     private final LinkedWalletService linkedWalletService;
     private final JwtUtil jwtUtil;
+
+    @Autowired
+    private  UserRepository repo;
 
     public WalletLinkController(LinkedWalletService linkedWalletService,  JwtUtil jwtUtil) {
         this.linkedWalletService = linkedWalletService;
@@ -42,6 +52,18 @@ public class WalletLinkController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+    }
+
+
+    @GetMapping("/linked-wallets")
+    public ResponseEntity<List<LinkWalletRequest>> getLinkedWallets(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
+
+        User user = repo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        List<LinkWalletRequest> walletAddresses = user.getwalletAddress();
+        return ResponseEntity.ok(walletAddresses);
     }
 
 }

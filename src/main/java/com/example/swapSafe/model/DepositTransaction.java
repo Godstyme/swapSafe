@@ -1,6 +1,7 @@
 package com.example.swapSafe.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ public class DepositTransaction {
     private String asset; // e.g., TRX, USDT
     private String fromAddress;
     private String toAddress;
+
+    @Getter
     private BigDecimal amount;
 
     private LocalDateTime depositedAt;

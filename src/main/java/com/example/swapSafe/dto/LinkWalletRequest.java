@@ -2,6 +2,8 @@ package com.example.swapSafe.dto;
 
 
 public class LinkWalletRequest {
+
+
     private String network;
 
     private String walletAddress;
