@@ -10,21 +10,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Reads the "roles" claim from the JWT and turns it into ROLE_*
- * authorities understood by Spring Security.
- */
+
 @Component
 public class MyRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
-        Object rolesObj = jwt.getClaim("roles");          // roles claim added at token creation
+        Object rolesObj = jwt.getClaim("roles");
         if (rolesObj instanceof List<?> list) {
             return list.stream()
                     .filter(String.class::isInstance)
                     .map(String.class::cast)
-                    .map(r -> new SimpleGrantedAuthority("ROLE_" + r)) // ROLE_ADMIN / ROLE_CUSTOMER
+                    .map(r -> new SimpleGrantedAuthority("ROLE_" + r)) 
                     .collect(Collectors.toSet());
         }
         return List.of();

@@ -13,12 +13,15 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 
 @Configuration
 public class SecurityConfig {
@@ -36,13 +39,11 @@ public class SecurityConfig {
         jwtAuthConverter.setJwtGrantedAuthoritiesConverter(roleConverter);
 
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .csrf(csrf -> csrf
-//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/deposit/simulate").authenticated()
+                        .requestMatchers("/api/deposit/simulate", "/","/api/wallet/linked-wallets").authenticated()
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -62,5 +63,18 @@ public class SecurityConfig {
                 secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
 
         return NimbusJwtDecoder.withSecretKey(key).build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

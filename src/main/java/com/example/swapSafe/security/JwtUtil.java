@@ -40,9 +40,18 @@ public class JwtUtil {
     }
     public Long extractUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(key)  // Use the same secret key to verify the token
+                .setSigningKey(key)  
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("uid", Long.class);  // Extract the user ID
+        return claims.get("uid", Long.class);
     }
+
+    public String extractEmailFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(key)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
 }
