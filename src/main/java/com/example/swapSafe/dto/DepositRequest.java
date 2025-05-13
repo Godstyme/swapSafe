@@ -9,20 +9,18 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class DepositRequest {
 
-    @NotBlank
+public class DepositRequest {
+    private String walletAddress;
+    private BigDecimal amount;
     private String network;
 
-    @NotBlank
-    private String asset;
+    public String getWalletAddress() { return walletAddress; }
+    public void setWalletAddress(String walletAddress) { this.walletAddress = walletAddress; }
 
-    @NotBlank
-    private String fromAddress;
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    @NotBlank
-    private String toAddress;
-
-    @NotNull
-    private BigDecimal amount;
+    public String getNetwork() { return network; }
+    public void setNetwork(String network) { this.network = network; }
 }

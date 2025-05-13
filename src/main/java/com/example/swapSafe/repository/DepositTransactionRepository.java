@@ -6,5 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DepositTransactionRepository extends JpaRepository<DepositTransaction, Long> {
-    List<DepositTransaction> findByUser(User user);
+
+    List<DepositTransaction> findByWalletAddress(String walletAddress);
+    List<DepositTransaction> findByUserId(Long userId);
+
 }

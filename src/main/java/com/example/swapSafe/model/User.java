@@ -1,5 +1,6 @@
 package com.example.swapSafe.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 //import lombok.Getter;
 import lombok.*;
@@ -24,7 +25,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 70)
     private String name;
 
     @Column(nullable = false, unique = true, length = 64)
@@ -50,6 +51,16 @@ public class User {
 
     @Column(nullable = false)
     private Instant updatedAt;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LinkedWalletAddress> linkedWalletAddresses = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserAssetBalance> assetBalances = new ArrayList<>();
+
+
 
     protected User() {
     }
@@ -100,7 +111,7 @@ public class User {
         }
 
         public Builder balance(BigDecimal balance) {
-            this.balance = balance != null ? balance : BigDecimal.ZERO; // Default to ZERO if balance is null
+            this.balance = balance != null ? balance : BigDecimal.ZERO; 
             return this;
         }
 

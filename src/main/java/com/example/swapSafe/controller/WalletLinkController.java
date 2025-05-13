@@ -2,6 +2,7 @@ package com.example.swapSafe.controller;
 
 
 import com.example.swapSafe.dto.LinkWalletRequest;
+import com.example.swapSafe.dto.LinkedWalletResponseDTO;
 import com.example.swapSafe.model.LinkedWalletAddress;
 import com.example.swapSafe.model.User;
 import com.example.swapSafe.repository.UserRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/wallet")
+@CrossOrigin(origins = "http://localhost:5173/")
 public class WalletLinkController {
 
     private final LinkedWalletService linkedWalletService;
@@ -54,16 +56,34 @@ public class WalletLinkController {
         }
     }
 
+  @GetMapping("/linked-wallet")
+    public ResponseEntity<LinkedWalletResponseDTO> getLinkedWalletByNetwork(
+            @RequestParam String network,
+            @RequestHeader("Authorization") String token) {
 
-    @GetMapping("/linked-wallets")
-    public ResponseEntity<List<LinkWalletRequest>> getLinkedWallets(@AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("email");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        String jwtToken = token.substring(7);
+        String email = jwtUtil.extractEmailFromToken(jwtToken);
 
         User user = repo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        List<LinkWalletRequest> walletAddresses = user.getwalletAddress();
-        return ResponseEntity.ok(walletAddresses);
+        return user.getLinkedWalletAddresses().stream()
+                .filter(wallet -> wallet.getNetwork().equalsIgnoreCase(network))
+                .findFirst()
+                .map(wallet -> new LinkedWalletResponseDTO(
+                        wallet.getNetwork(),
+                        wallet.getWalletAddress(),
+                        wallet.getLinkedAt()))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
+
+
+
 
 }

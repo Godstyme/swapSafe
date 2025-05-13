@@ -32,7 +32,7 @@ public class LinkedWalletService {
         if (!validator.isValid(walletAddress)) {
             throw new IllegalArgumentException("Invalid wallet address '" + walletAddress + "' for network: " + network);
         }
-//        Optional<LinkedWalletAddress> existing = linkedWalletRepository.findByWalletAddressAndNetwork(walletAddress, network);
+//
         Optional<LinkedWalletAddress> existing = linkedWalletRepository.findByUserIdAndNetwork(userId, network);
 
         if (existing.isPresent()) {
@@ -49,4 +49,10 @@ public class LinkedWalletService {
         System.out.println("Wallet address linked successfully");
         System.out.println("Linked At: " + linkedWalletAddress.getLinkedAt());
     }
+
+    public LinkedWalletAddress findLinkedWallet(String walletAddress, String network) {
+        return linkedWalletRepository.findByWalletAddressAndNetwork(walletAddress, network)
+                .orElseThrow(() -> new RuntimeException("Wallet not linked or does not exist."));
+    }
+
 }
